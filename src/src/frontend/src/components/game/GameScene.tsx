@@ -312,7 +312,6 @@ interface GameSceneProps {
 function GameLogic({
   onHudUpdate,
   onDead,
-  onWin,
   onLockChange,
   gameDataRef,
   playerName,
@@ -666,52 +665,7 @@ function GameLogic({
       playerGroupRef.current.rotation.y = player.yaw;
     }
 
-    // ── Bots ──────────────────────────────────────────────────────────────
-    for (let i = 0; i < bots.length; i++) {
-      const bot = bots[i];
-      if (!bot.alive) continue;
-      const dx = player.x - bot.x;
-      const dz = player.z - bot.z;
-      const dist = Math.sqrt(dx * dx + dz * dz);
-      bot.state =
-        dist < BOT_SHOOT_RANGE
-          ? "shoot"
-          : dist < BOT_CHASE_RANGE
-            ? "chase"
-            : "patrol";
-      if (bot.state === "patrol") {
-        const pdx = bot.patrolX - bot.x;
-        const pdz = bot.patrolZ - bot.z;
-        const pdist = Math.sqrt(pdx * pdx + pdz * pdz);
-        if (pdist < 1.5) {
-          bot.patrolX = (Math.random() - 0.5) * 160;
-          bot.patrolZ = (Math.random() - 0.5) * 160;
-        } else {
-          bot.x += (pdx / pdist) * BOT_SPEED_PATROL * dt;
-          bot.z += (pdz / pdist) * BOT_SPEED_PATROL * dt;
-        }
-      } else if (bot.state === "chase") {
-        bot.x += (dx / dist) * BOT_SPEED_CHASE * dt;
-        bot.z += (dz / dist) * BOT_SPEED_CHASE * dt;
-      } else {
-        bot.x += (dx / dist) * BOT_SPEED_SHOOT * dt;
-        bot.z += (dz / dist) * BOT_SPEED_SHOOT * dt;
-        bot.shootCooldown -= dt;
-        if (bot.shootCooldown <= 0) {
-          bot.shootCooldown = BOT_SHOOT_COOLDOWN + Math.random();
-          if (!isOnline && player.armor > 0)
-            player.armor -= Math.min(player.armor, BOT_SHOOT_DAMAGE * 0.5);
-          else if (!isOnline) player.health -= BOT_SHOOT_DAMAGE;
-        }
-      }
-      bot.x = Math.max(-99, Math.min(99, bot.x));
-      bot.z = Math.max(-99, Math.min(99, bot.z));
-      const grp = botGroupRefs.current[i];
-      if (grp) {
-        grp.position.set(bot.x, 0, bot.z);
-        grp.rotation.y = Math.atan2(player.x - bot.x, player.z - bot.z);
-      }
-    }
+    // Bots disabled
 
     // ── Update car group positions ─────────────────────────────────────────
     for (let i = 0; i < cars.length; i++) {
@@ -794,11 +748,9 @@ function GameLogic({
       player.health = 100;
       player.armor = 50;
     }
-    const aliveCount = bots.filter((b) => b.alive).length;
-    if (!isOnline && aliveCount === 0 && gameActiveRef.current) {
-      gameActiveRef.current = false;
-      onWin(player.kills);
-    }
+    // Bot win condition disabled (no bots)
+    // const aliveCount = bots.filter((b) => b.alive).length;
+    // if (!isOnline && aliveCount === 0 && ...) onWin(...);
   });
 
   return (
@@ -877,30 +829,31 @@ function GameLogic({
         <HumanoidAvatar color="#F28C2A" nameTag={playerName} />
       </group>
 
-      {/* Bots */}
-      {BOT_MESH_DEFS.map(({ stableKey, idx, color, spawnX, spawnZ }) => (
-        <group
-          key={stableKey}
-          ref={(el) => {
-            botGroupRefs.current[idx] = el;
-          }}
-          position={[spawnX, 0, spawnZ]}
-        >
-          <mesh
+      {/* Bots disabled */}
+      {false &&
+        BOT_MESH_DEFS.map(({ stableKey, idx, color, spawnX, spawnZ }) => (
+          <group
+            key={stableKey}
             ref={(el) => {
-              botMeshRefs.current[idx] = el;
+              botGroupRefs.current[idx] = el;
             }}
-            position={[0, 0.75, 0]}
-            visible={false}
+            position={[spawnX, 0, spawnZ]}
           >
-            <boxGeometry args={[0.8, 1.5, 0.5]} />
-            <meshBasicMaterial />
-          </mesh>
-          {botsAlive[idx] && (
-            <HumanoidAvatar color={color} nameTag={`Bot ${idx + 1}`} />
-          )}
-        </group>
-      ))}
+            <mesh
+              ref={(el) => {
+                botMeshRefs.current[idx] = el;
+              }}
+              position={[0, 0.75, 0]}
+              visible={false}
+            >
+              <boxGeometry args={[0.8, 1.5, 0.5]} />
+              <meshBasicMaterial />
+            </mesh>
+            {botsAlive[idx] && (
+              <HumanoidAvatar color={color} nameTag={`Bot ${idx + 1}`} />
+            )}
+          </group>
+        ))}
 
       {/* Cars */}
       {CAR_POSITIONS.map((cp, i) => (
