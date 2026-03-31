@@ -1,0 +1,79 @@
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 0.25rem;
+    --background: 0.14 0.022 245;
+    --foreground: 0.97 0.005 250;
+    --card: 0.2 0.025 238;
+    --card-foreground: 0.97 0.005 250;
+    --popover: 0.2 0.025 238;
+    --popover-foreground: 0.97 0.005 250;
+    --primary: 0.72 0.17 56;
+    --primary-foreground: 0.12 0.01 250;
+    --secondary: 0.25 0.02 240;
+    --secondary-foreground: 0.97 0.005 250;
+    --muted: 0.22 0.018 240;
+    --muted-foreground: 0.73 0.013 252;
+    --accent: 0.72 0.17 56;
+    --accent-foreground: 0.12 0.01 250;
+    --destructive: 0.62 0.22 27;
+    --destructive-foreground: 0.97 0.005 250;
+    --border: 0.3 0.02 240;
+    --input: 0.28 0.02 240;
+    --ring: 0.72 0.17 56;
+    --chart-1: 0.78 0.18 145;
+    --chart-2: 0.72 0.17 56;
+    --chart-3: 0.65 0.18 245;
+    --chart-4: 0.7 0.16 290;
+    --chart-5: 0.75 0.15 170;
+    --sidebar: 0.18 0.022 242;
+    --sidebar-foreground: 0.97 0.005 250;
+    --sidebar-primary: 0.72 0.17 56;
+    --sidebar-primary-foreground: 0.12 0.01 250;
+    --sidebar-accent: 0.25 0.02 240;
+    --sidebar-accent-foreground: 0.97 0.005 250;
+    --sidebar-border: 0.3 0.02 240;
+    --sidebar-ring: 0.72 0.17 56;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Barlow", sans-serif;
+    overflow: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+/* Force landscape orientation on portrait devices */
+@media (orientation: portrait) {
+  #root {
+    position: fixed;
+    width: 100vh;
+    height: 100vw;
+    top: calc((100vh - 100vw) / 2);
+    left: calc((100vw - 100vh) / 2);
+    transform: rotate(90deg);
+    transform-origin: center center;
+    overflow: hidden;
+  }
+}
