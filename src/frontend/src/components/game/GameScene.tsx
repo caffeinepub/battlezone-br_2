@@ -378,13 +378,20 @@ function GameLogic({
   const [remotePlayers, setRemotePlayers] = useState<OnlinePlayer[]>([]);
   const remoteUpdateThrottle = useRef(0);
 
-  const killBot = useCallback((index: number) => {
-    setBotsAlive((prev) => {
-      const n = [...prev];
-      n[index] = false;
-      return n;
-    });
-  }, []);
+  const killBot = useCallback(
+    (index: number) => {
+      setBotsAlive((prev) => {
+        const n = [...prev];
+        n[index] = false;
+        const allDead = n.every((alive) => !alive);
+        if (allDead) {
+          _onWin(playerRef.current.kills);
+        }
+        return n;
+      });
+    },
+    [_onWin],
+  );
 
   const collectPickup = useCallback((index: number) => {
     pickupsVisibleRef.current[index] = false;
